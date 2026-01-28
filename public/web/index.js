@@ -622,7 +622,7 @@
 				if (!questionEl.querySelectorAll("pre code").length) return;
 
 				const { highlight } = await import(
-					"https://cdn.jsdelivr.net/npm/sugar-high@0.9.5"
+					"/s/sugar-high.js"
 				);
 				questionEl.querySelectorAll("pre code").forEach((block) => {
 					const code = block.textContent || "";
@@ -1304,8 +1304,7 @@
 						if (!window.Chart) {
 							await new Promise((resolve, reject) => {
 								const script = document.createElement("script");
-								script.src =
-									"https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+								script.src = "/s/chart.js";
 								script.onload = resolve;
 								script.onerror = reject;
 								document.head.append(script);

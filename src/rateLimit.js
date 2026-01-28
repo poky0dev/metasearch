@@ -8,9 +8,9 @@ const secret = new TextEncoder().encode(Bun.randomUUIDv7());
 const POW_QUERIES = 100;
 const POW_EXPIRY_MS = 2 * 24 * 60 * 60 * 1000;
 const CHALLENGE_EXPIRY_MS = 5 * 60 * 1000;
-const CHALLENGES_COUNT = 30;
+const CHALLENGES_COUNT = 20;
 
-const ARGON2_MEMORY = Math.round(1.5 * 1024);
+const ARGON2_MEMORY = Math.round(4 * 1024);
 const ARGON2_TIME = 1;
 const ARGON2_HASH_LENGTH = 16;
 

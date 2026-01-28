@@ -161,6 +161,15 @@
         font-display: swap;
         src: url("/s/inter-var-v4.woff2");
       }
+
+      @view-transition {
+        navigation: auto;
+      }
+      
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation-duration: .1s;
+      }
     </style>
     <link
       rel="preload"
