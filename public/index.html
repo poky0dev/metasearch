@@ -92,7 +92,7 @@
           border-radius: 6px;
           display: flex;
           max-width: 672px;
-          cursor: pointer;
+          cursor: text;
 
           &:has(input:focus) {
             border-color: #bac2de;
@@ -228,6 +228,21 @@
         .addEventListener("input", () => {
           document.title = document.querySelector("input").value || "search!";
         });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        let cookiesEnabled;
+        
+        try {
+          document.cookie = "test=1; path=/";
+          cookiesEnabled = document.cookie.indexOf("test=") !== -1;
+          document.cookie =
+            "test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        } catch {}
+        
+        if (!cookiesEnabled) {
+          
+        }
+      });
     </script>
   </body>
 </html>

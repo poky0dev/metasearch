@@ -41,10 +41,12 @@ new Elysia()
 			return await Bun.file("./public/index.html").text();
 		}
 
+    let passQueryUsed;
 		let powToken = cookie?.galileo_pass?.value;
 		if (query.pass) {
 			try {
-				powToken = await validatePass(query.pass);
+        powToken = await validatePass(query.pass);
+        passQueryUsed = true;
 			} catch {}
 		}
 		const rateCheck = await recordAndCheck(powToken);
@@ -85,7 +87,7 @@ new Elysia()
 					.replaceAll('"', "&quot;"),
 			)
 			.replaceAll("%%inputValueEncoded%%", encodeURIComponent(q))
-			.replaceAll("%%signed_pass%%", await signPass(powToken));
+      .replaceAll("&pass", passQueryUsed ? `&pass=${encodeURIComponent(query.pass)}` : "");
 
 		if (headers["accept-encoding"]?.includes?.("gzip")) {
 			set.headers["Content-Encoding"] = "gzip";
@@ -122,7 +124,7 @@ new Elysia()
 			results = await searchMixed(payload.s);
 		}
 
-		const html = template
+		const js = template
 			.replace(
 				"__results_pk__",
 				await sign({ q: payload.s, p: 1, t: payload.t }, "2h"),
@@ -136,10 +138,10 @@ new Elysia()
 
 		if (headers["accept-encoding"]?.includes?.("gzip")) {
 			set.headers["Content-Encoding"] = "gzip";
-			return Bun.gzipSync(html);
+			return Bun.gzipSync(js);
     }
-		
-    return html;
+
+    return js;
 	})
 	.post(
 		"/p",

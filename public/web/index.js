@@ -611,13 +611,14 @@
 					? "show less"
 					: "show more";
 			};
-			box.append(showMore);
+      box.append(showMore);
+
+			setTimeout(async () => {
+			console.log(questionEl.scrollHeight)
 			if (questionEl.scrollHeight < 480) {
 				showMore.remove();
 				questionEl.classList.add("expanded");
 			}
-
-			setTimeout(async () => {
 				if (!questionEl.querySelectorAll("pre code").length) return;
 
 				const { highlight } = await import(
@@ -1738,7 +1739,7 @@
 						.reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)
 						.toString(16),
 					"X-Galileo-JWT": "__results_cl__",
-					"X-Galileo-Pass": localStorage.getItem("galileo_pass") || `%%galileo_pass%%`,
+					"X-Galileo-Pass": "%%galileo_pass%%",
 				},
 				body: pk,
 			});

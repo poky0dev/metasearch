@@ -146,14 +146,19 @@
 			} else {
 				break;
 			}
-		}
+    }
 
-		insertAfterItem.after(detailPanel);
+    insertAfterItem.after(detailPanel);
 
-		setTimeout(() => {
-			detailPanel.scrollIntoView({ behavior: "smooth", block: "center" });
-		}, 50);
-	};
+    requestAnimationFrame(() => {
+		  const rect = detailPanel.getBoundingClientRect();
+		  const margin = 50;
+		  
+		  if (rect.top < margin || rect.bottom > window.innerHeight - margin) {
+		    detailPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+		  }
+    })
+  };
 
 	const navigateImage = (direction) => {
 		const newIndex = selectedIndex + direction;
@@ -287,7 +292,7 @@
 						.reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0)
 						.toString(16),
 					"X-Galileo-JWT": "__results_cl__",
-					"X-Galileo-Pass": localStorage.getItem("galileo_pass") || `%%galileo_pass%%`,
+					"X-Galileo-Pass": "%%galileo_pass%%",
 				},
 				body: pk,
 			});

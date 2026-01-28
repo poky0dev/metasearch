@@ -182,14 +182,13 @@
       </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/argon2-browser@1.18.0/dist/argon2-bundled.min.js"></script>
     <script type="module">
       const progressBar = document.getElementById("bar");
       const errorEl = document.getElementById("error");
 
       const workerCode = `
         self.onmessage = async (e) => {
-          importScripts('https://cdn.jsdelivr.net/npm/argon2-browser@1.18.0/dist/argon2-bundled.min.js');
+          importScripts('${window.location.origin}/s/argon2.js');
 
           const { seed, jobIndex } = e.data;
           const encoder = new TextEncoder();
@@ -287,55 +286,73 @@
           };
         });
 
-      try {
-        const concurrency = navigator.hardwareConcurrency || 4;
-        const queue = Array.from(
-          { length: __jobs__ },
-          (_, i) => () => runJob(i),
-        );
+      (async () => {
+        try {
+          const concurrency = navigator.hardwareConcurrency || 4;
+          const queue = Array.from(
+            { length: __jobs__ },
+            (_, i) => () => runJob(i),
+          );
 
-        for (let i = 0; i < queue.length; i += concurrency) {
-          const batch = queue.slice(i, i + concurrency).map((fn) => fn());
-          const results = await Promise.all(batch);
+          for (let i = 0; i < queue.length; i += concurrency) {
+            const batch = queue.slice(i, i + concurrency).map((fn) => fn());
+            const results = await Promise.all(batch);
 
-          if (results.some((r) => r.error)) {
-            throw new Error(results.find((r) => r.error).error);
+            if (results.some((r) => r.error)) {
+              throw new Error(results.find((r) => r.error).error);
+            }
           }
+
+          solutions.sort((a, b) => a.jobIndex - b.jobIndex);
+
+          const orderedSolutions = solutions.map(
+            ({ nonce, attempts }) => nonce,
+          );
+
+          const cookiesEnabled = () => {
+            try {
+              document.cookie = "test=1; path=/";
+              const supported = document.cookie.indexOf("test=") !== -1;
+              document.cookie =
+                "test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+              return supported;
+            } catch {
+              return false;
+            }
+          };
+
+          const response = await fetch("/challenge", {
+            method: "POST",
+            headers: {
+              "X-Galileo-Csrf": "1",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify([
+              "%%seedId%%",
+              orderedSolutions,
+              cookiesEnabled(),
+            ]),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "verification failed");
+          }
+          
+          const url = new URL("%%redirect%%", window.location.origin);
+          if (data.pass) {
+            url.searchParams.set('pass', data.pass);
+          }
+          
+          window.location.href = url.href;
+        } catch (err) {
+          errorEl.textContent = err.message || "something went wrong";
+          errorEl.style.display = "block";
+          document.querySelector("#bar").style.backgroundColor = "#f38ba8";
+          document.querySelector("#progress").style.outlineColor = "#f38ba8";
         }
-
-        solutions.sort((a, b) => a.jobIndex - b.jobIndex);
-
-        const orderedSolutions = solutions.map(({ nonce, attempts }) => ({
-          nonce,
-          attempts,
-        }));
-
-        const response = await fetch("/challenge", {
-          method: "POST",
-          headers: {
-            "X-Galileo-Csrf": "1",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(["%%seedId%%", orderedSolutions]),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "verification failed");
-        }
-
-        if (data.t) {
-          localStorage.setItem("galileo_pass", data.t);
-        }
-
-        window.location.href = `%%redirect%%`;
-      } catch (err) {
-        errorEl.textContent = err.message || "something went wrong";
-        errorEl.style.display = "block";
-        document.querySelector("#bar").style.backgroundColor = "#f38ba8";
-        document.querySelector("#progress").style.outlineColor = "#f38ba8";
-      }
+      })();
     </script>
   </body>
 </html>

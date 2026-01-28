@@ -8,9 +8,9 @@ const secret = new TextEncoder().encode(Bun.randomUUIDv7());
 const POW_QUERIES = 100;
 const POW_EXPIRY_MS = 2 * 24 * 60 * 60 * 1000;
 const CHALLENGE_EXPIRY_MS = 5 * 60 * 1000;
-const CHALLENGES_COUNT = 50;
+const CHALLENGES_COUNT = 30;
 
-const ARGON2_MEMORY = 2 * 1024;
+const ARGON2_MEMORY = Math.round(1.5 * 1024);
 const ARGON2_TIME = 1;
 const ARGON2_HASH_LENGTH = 16;
 
@@ -129,7 +129,7 @@ const verifySolution = async (seedId, solution) => {
 	}
 
 	for (let i = 0; i < solution.length; i++) {
-		const { nonce } = solution[i];
+		const nonce = solution[i];
 		const input = `${challenge.seed}:${i}:${nonce}`;
 
 		const saltInput = `${challenge.seed}:${i}`;
@@ -233,7 +233,7 @@ export const rateLimitElysia = new Elysia({ prefix: "/challenge" })
 			return { error: "CSRF header missing" };
 		}
 
-		const [seedId, solution] = body;
+		const [seedId, solution, doCookie] = body;
 
 		if (
 			!seedId ||
@@ -251,13 +251,16 @@ export const rateLimitElysia = new Elysia({ prefix: "/challenge" })
 			return { error: result.error };
 		}
 
-		cookie.galileo_pass.set({
-			value: result.token,
-			maxAge: POW_EXPIRY_MS / 1000,
-			path: "/",
-			httpOnly: true,
-			sameSite: "lax",
-		});
+    if (doCookie) {
+      cookie.galileo_pass.set({
+			  value: result.token,
+			  maxAge: POW_EXPIRY_MS / 1000,
+			  path: "/",
+			  httpOnly: true,
+			  sameSite: "lax",
+      });
+      return { success: true };
+    }
 
-		return { success: true, t: result.token };
+		return { success: true, pass: await signPass(result.token) };
 	});
