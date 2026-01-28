@@ -507,7 +507,7 @@
 		}
 	});
 
-	document.addEventListener("click", (e) => {
+	document.addEventListener("mousedown", (e) => {
 		if (!optionsPopup.contains(e.target) && e.target !== optionsBtn) {
 			optionsPopup.classList.remove("visible");
 		}

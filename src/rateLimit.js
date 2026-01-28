@@ -120,24 +120,55 @@ const verifySolution = async (challengeJwt, solution) => {
 	}
 
 	const parts = challengeJwt.split('.');
-	const signature = parts[2].replace(/=/g, '');
+	const signatureB64url = parts[2];
+
+  const signatureB64 = signatureB64url.replace(/-/g, '+').replace(/_/g, '/');
+	const signatureBytes = Buffer.from(signatureB64, 'base64');
+	const signatureHex = signatureBytes.toString('hex');
 
 	const now = Date.now();
 	const existing = await db`
 		SELECT * FROM challenge_blocklist
-		WHERE signature = ${signature}
+		WHERE signature = ${signatureHex}
 	`;
 
 	if (existing.length > 0) {
 		return { valid: false, error: "Challenge already used" };
 	}
 
+	const selectionKey = await crypto.subtle.importKey(
+		"raw",
+		secret,
+		{ name: "HMAC", hash: "SHA-256" },
+		false,
+		["sign"]
+	);
+	const selectionSeed = await crypto.subtle.sign(
+		"HMAC",
+		selectionKey,
+		new TextEncoder().encode(`verify:${signatureHex}`)
+	);
+	const selectionBytes = new Uint8Array(selectionSeed);
+
+	const numToVerify = 14 + (selectionBytes[0] % 3);
+
+	const indices = Array.from({ length: solution.length }, (_, i) => i);
+	for (let i = indices.length - 1; i > 0; i--) {
+		const j = selectionBytes[i % selectionBytes.length] % (i + 1);
+		[indices[i], indices[j]] = [indices[j], indices[i]];
+	}
+	const toVerify = indices.slice(0, numToVerify);
+
 	for (let i = 0; i < solution.length; i++) {
 		const nonce = solution[i];
-		const input = `${payload.seed}:${i}:${nonce}`;
 		if (typeof nonce !== 'number' || !Number.isInteger(nonce) || nonce < 0) {
 			return { valid: false, error: "Invalid nonce format" };
 		}
+	}
+
+	for (const i of toVerify) {
+		const nonce = solution[i];
+		const input = `${payload.seed}:${i}:${nonce}`;
 
 		const saltInput = `${payload.seed}:${i}`;
 		const saltHash = await crypto.subtle.digest(
@@ -160,10 +191,10 @@ const verifySolution = async (challengeJwt, solution) => {
 			const hashHex = Buffer.from(hash).toString("hex");
 
 			if (!hashHex.startsWith(payload.prefix)) {
-				return { valid: false, error: `Invalid solution for challenge ${i}` };
+				return { valid: false, error: `Invalid solution for challenge` };
 			}
 		} catch (error) {
-			console.error("Argon2 verification error:", error);
+			console.error("argon2 verification error:", error);
 			return { valid: false, error: "Verification failed" };
 		}
 	}
@@ -171,7 +202,7 @@ const verifySolution = async (challengeJwt, solution) => {
 	const expiresAt = now + CHALLENGE_EXPIRY_MS;
 	await db`
 		INSERT INTO challenge_blocklist (signature, expires_at)
-		VALUES (${signature}, ${expiresAt})
+		VALUES (${signatureHex}, ${expiresAt})
 	`;
 
 	const token = Bun.randomUUIDv7();
@@ -226,7 +257,7 @@ export const rateLimitElysia = new Elysia({ prefix: "/challenge" })
 
 		const html = await Bun.file("./public/challenge.html").text();
 		const injectedHtml = html
-			.replaceAll("%%seedId%%", challenge.challengeJwt)
+			.replaceAll("%%challengeJwt%%", challenge.challengeJwt)
 			.replaceAll("%%seed%%", challenge.seed)
 			.replace("%%prefix%%", challenge.prefix)
 			.replaceAll("__jobs__", CHALLENGES_COUNT.toString())
@@ -255,7 +286,7 @@ export const rateLimitElysia = new Elysia({ prefix: "/challenge" })
 			return { error: `expected challengeJwt and ${CHALLENGES_COUNT} solutions` };
 		}
 
-		const result = await verifySolution(seedId, solution);
+		const result = await verifySolution(challengeJwt, solution);
 
 		if (!result.valid) {
 			set.status = 400;
