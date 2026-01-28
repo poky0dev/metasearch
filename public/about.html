@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>about / search.tiago.zip</title>
+    <meta name="theme-color" content="#1f1e2e" />
+    <style>
+      * {
+        box-sizing: border-box;
+        min-width: 0;
+        text-underline-offset: 3px;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+      }
+
+      :root {
+        color-scheme: dark;
+        interpolate-size: allow-keywords;
+        font-family:
+          InterVar,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          "Open Sans",
+          "Helvetica Neue",
+          sans-serif;
+
+        --sh-class: #b4befe;
+        --sh-identifier: #a6e3a1;
+        --sh-sign: #cdd6f4;
+        --sh-property: #94e2d5;
+        --sh-entity: #89dceb;
+        --sh-jsxliterals: #fab387;
+        --sh-string: #f9e2af;
+        --sh-keyword: #89b4fa;
+        --sh-comment: #6c7086;
+        --text: #cdd6f4;
+        --bg: #1f1e2e;
+        --surface0: #313244;
+        --surface1: #45475a;
+        --subtext: #a6adc8;
+        --blue: #89b4fa;
+        --muted: #7f849c;
+      }
+
+      html {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        scrollbar-width: thin;
+        scrollbar-color: hsla(255 0 255 / 15%) var(--bg);
+        background-color: var(--bg);
+        scrollbar-gutter: stable;
+        overflow-x: hidden;
+      }
+
+      body {
+        display: flex;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        overflow-wrap: break-word;
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      input,
+      textarea,
+      select {
+        field-sizing: content;
+      }
+
+      header {
+        max-width: 1136px;
+        margin: 0 auto;
+        width: 100%;
+        padding-left: 18px;
+        padding-right: 18px;
+        display: flex;
+        flex-direction: column;
+        margin-top: 15px;
+
+        @media (max-width: 800px) {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+      }
+
+      .search-container {
+        display: flex;
+        gap: 24px;
+
+        .search-bar {
+          height: 40px;
+          background-color: var(--surface0);
+          border: 1px solid #7f849c78;
+          width: 100%;
+          border-radius: 6px;
+          display: flex;
+          max-width: 672px;
+          cursor: pointer;
+
+          &:has(input:focus) {
+            border-color: #bac2de;
+            outline: rgb(186, 194, 222) 0.5px solid;
+          }
+
+          input {
+            background-color: transparent;
+            border: none;
+            height: 100%;
+            width: 100%;
+            padding: 0 10px;
+            font-size: 1em;
+            font-family: inherit;
+            color: var(--text);
+
+            &:focus {
+              outline: none;
+            }
+
+            &::placeholder {
+              color: var(--muted);
+              user-select: none;
+            }
+          }
+
+          button {
+            aspect-ratio: 1;
+            height: 100%;
+            border-radius: 13.6px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: var(--text);
+            transform: scale(0.9);
+            justify-content: center;
+
+            svg {
+              width: 20px;
+              height: 28px;
+            }
+          }
+        }
+      }
+
+      .body {
+        max-width: 1136px;
+        margin: 0 auto;
+        display: flex;
+        width: 100%;
+        padding-left: 18px;
+        padding-right: 18px;
+        gap: 58px;
+        margin-top: 12px;
+
+        @media (max-width: 800px) {
+          padding-left: 12px;
+          padding-right: 12px;
+          flex-direction: column-reverse;
+          gap: 32px;
+        }
+      }
+
+      main {
+        max-width: 672px;
+        display: block;
+        width: 100%;
+        color: var(--text);
+        line-height: 28px;
+
+        @media (max-width: 800px) {
+          max-width: 100%;
+        }
+
+        strong {
+          font-weight: 600;
+        }
+
+        em {
+          font-style: italic;
+        }
+
+        h1,
+        h2,
+        h3 {
+          line-height: 1.3;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        h2 {
+          font-size: 17px;
+          margin-top: 1.8rem;
+          font-weight: 600;
+          margin-bottom: -10px;
+        }
+
+        .bigh2 {
+          margin: 48px 0 16px;
+          border-top: 1px solid #e5e9f824;
+          padding-top: 24px;
+          letter-spacing: -0.02em;
+          line-height: 32px;
+          font-size: 24px;
+        }
+
+        h3 {
+          font-size: 17px;
+          font-weight: 600;
+          margin-bottom: -10px;
+          margin-top: 22px;
+        }
+
+        h1,
+        h2,
+        h3,
+        b {
+          color: #e5e9f8;
+        }
+
+        a {
+          color: var(--blue);
+          text-decoration: underline;
+
+          &:hover {
+            text-decoration: none;
+          }
+        }
+
+        code {
+          background: rgba(255, 255, 255, 0.06);
+          padding: 0.15em 0.35em;
+          border-radius: 4px;
+          font-family: ui-monospace, SFMono-Regular, monospace;
+          font-size: 0.9em;
+        }
+
+        pre {
+          background: rgba(0, 0, 0, 0.35);
+          padding: 12px;
+          border-radius: 6px;
+          overflow-x: auto;
+          margin: 1em 0;
+
+          code {
+            background: none;
+            padding: 0;
+            font-size: 0.9em;
+            position: relative;
+          }
+        }
+
+        ul,
+        ol {
+          padding-left: 1.4em;
+          margin: 0.75em 0;
+        }
+
+        li {
+          margin: 0.3em 0;
+        }
+
+        blockquote {
+          border-left: 3px solid #a6e3a1;
+          padding-left: 12px;
+          margin: 1em 0;
+          opacity: 0.9;
+        }
+      }
+
+      @font-face {
+        font-family: "InterVar";
+        font-display: swap;
+        src: url("/s/inter-var-v4.woff2");
+      }
+    </style>
+    <meta name="color-scheme" content="dark" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
+    <meta name="robots" content="index,follow" />
+    <link
+      title="search.tiago.zip"
+      href="/s/opensearch.xml"
+      rel="search"
+      type="application/opensearchdescription+xml"
+    />
+    <link
+      rel="preload"
+      href="/s/inter-var-v4.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body>
+    <header>
+      <form action="/">
+        <div class="search-container">
+          <div class="search-bar">
+            <input name="q" value="" placeholder="search…" />
+
+            <button title="search!" type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                class="w-6 h-6"
+                focusable="false"
+                style="fill: currentColor"
+              >
+                <path
+                  d="m18.031 16.617 4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617m-2.006-.742A6.98 6.98 0 0 0 18 11c0-3.867-3.133-7-7-7s-7 3.133-7 7 3.133 7 7 7a6.98 6.98 0 0 0 4.875-1.975z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </form>
+    </header>
+
+    <div class="body">
+      <main>
+        <p>
+          search.tiago.zip is a metasearch engine that scrapes results from
+          brave search. it doesn't track you and, unlike many other metasearch
+          engines such as Searx, feels fast and looks nice.
+        </p>
+
+        <h2 class="bigh2">setting it as your default engine</h2>
+
+        <p>
+          <b>firefox-based browsers:</b> right-click the url bar and select "Add
+          'search.tiago.zip'". then, go to
+          <code>about:preferences#search</code> and under "default search
+          engine" pick "search.tiago.zip"
+        </p>
+
+        <p>
+          <b>chromium-based browsers</b> go to
+          <code>chrome://settings/searchEngines</code> and scroll down to "Site
+          search". click "Add" and fill it in with:
+        </p>
+
+        <ul>
+          <li><b>name:</b> "search.tiago.zip"</li>
+          <li><b>shortcut:</b> "search.tiago.zip"</li>
+          <li><b>url:</b> <code>https://search.tiago.zip/?q=%s</code></li>
+        </ul>
+        <p>
+          then save, scroll down to the newly created entry, click the "…" and
+          "make default"
+        </p>
+
+        <h2 class="bigh2">privacy</h2>
+        <h2>anonymous traffic analytics</h2>
+        <p>
+          we use plausible to get an approximate number of active users, fully
+          anonymously. no identifiable information about you or your requests is
+          ever stored.
+          <a
+            href="https://plausible.io/privacy-focused-web-analytics"
+            target="_blank"
+            >learn more about plausible’s dedication to privacy</a
+          >
+        </p>
+
+        <h2>data sharing</h2>
+        <p>
+          we do <b>*not*</b> share your data with 3rd-parties. we need to send
+          brave your search queries to get result but they don't store them and
+          can't see your ip address or know who you are.
+        </p>
+
+        <h2>self-hosting</h2>
+        <p>
+          if you'd rather selfhost this, please follow the guide in
+          <a href="https://github.com/tiagozip/search" target="_blank"
+            >the github repo</a
+          >
+        </p>
+      </main>
+    </div>
+  </body>
+</html>
