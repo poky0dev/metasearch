@@ -289,7 +289,6 @@
 		const grid = document.getElementById("images-grid");
 		const items = grid.querySelectorAll(".image-item");
 
-		// Find the DOM element that corresponds to this index
 		let clickedItem = null;
 		for (const item of items) {
 			if (parseInt(item.dataset.imageIndex, 10) === index) {
