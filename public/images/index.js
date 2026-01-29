@@ -542,7 +542,7 @@
 		if (!isVisible) {
 			const rect = optionsBtn.getBoundingClientRect();
 			optionsPopup.style.position = "absolute";
-			optionsPopup.style.left = `${rect.left - 220}px`;
+			optionsPopup.style.left = `${rect.left - 217}px`;
 		}
 	});
 
