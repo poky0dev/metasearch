@@ -176,6 +176,7 @@
         padding-right: 18px;
         gap: 58px;
         margin-top: 12px;
+        margin-bottom: 3em;
 
         @media (max-width: 800px) {
           padding-left: 12px;
@@ -280,10 +281,18 @@
         ol {
           padding-left: 1.4em;
           margin: 0.75em 0;
+          margin-top: 20px;
+          display: flex;
+          flex-direction: column;
         }
 
         li {
           margin: 0.3em 0;
+          margin-bottom: -1px;
+
+          b {
+            font-weight: 500;
+          }
         }
 
         blockquote {
@@ -404,6 +413,19 @@
             >the github repo</a
           >
         </p>
+
+        <h2>keyboard shortcuts</h2>
+        <ul>
+          <li><b>j / arrowup</b> — move highlight up a result</li>
+          <li><b>k / arrowdown</b> — move highlight down a result</li>
+          <li><b>arrowleft</b> — show previous image's details</li>
+          <li><b>arrowright</b> — show next image's details</li>
+          <li><b>/</b> — focus the search bar</li>
+          <li><b>w</b> — open the web results tab</li>
+          <li><b>i</b> — open the web images tab</li>
+          <li><b>n</b> — open the web news tab</li>
+          <li><b>esc</b> — close details panel</li>
+        </ul>
       </main>
     </div>
   </body>

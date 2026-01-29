@@ -591,4 +591,27 @@
 
 		observer.observe(document.querySelector("#load-more-sentinel"));
 	})();
+
+	document.addEventListener("keydown", (event) => {
+		const input = document.querySelector(".search-bar input");
+		if (document.activeElement === input) return;
+
+		if (event.key === "/") {
+			input.focus();
+			input.setSelectionRange(input.value.length, input.value.length);
+			event.preventDefault();
+		}
+
+		if (event.key === "w") {
+			document.querySelectorAll(".tabs .tab")[0].click();
+		}
+
+		if (event.key === "i") {
+			document.querySelectorAll(".tabs .tab")[1].click();
+		}
+
+		if (event.key === "n") {
+			document.querySelectorAll(".tabs .tab")[2].click();
+		}
+	});
 })();

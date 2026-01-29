@@ -1904,4 +1904,52 @@
 	if (currentQuery && hasMoreResults && !data.captchaHtml) {
 		observer.observe(sentinel);
 	}
+
+	document.addEventListener("keydown", (event) => {
+		const input = document.querySelector(".search-bar input");
+		if (document.activeElement === input) return;
+
+		if (event.key === "/") {
+			input.focus();
+      input.setSelectionRange(input.value.length, input.value.length);
+      event.preventDefault();
+		}
+
+		if (event.key === "w") {
+			document.querySelectorAll(".tabs .tab")[0].click();
+		}
+
+		if (event.key === "i") {
+			document.querySelectorAll(".tabs .tab")[1].click();
+		}
+
+		if (event.key === "n") {
+			document.querySelectorAll(".tabs .tab")[2].click();
+		}
+
+		if (["j", "k", "ArrowUp", "ArrowDown"].includes(event.key)) {
+			const results = Array.from(document.querySelectorAll(".result-title"));
+			if (!results.length) return;
+
+			let active = document.activeElement;
+			let index = results.indexOf(active);
+
+			if (event.key === "k" || event.key === "ArrowDown") {
+				if (index === -1 || index === results.length - 1) {
+					index = 0;
+				} else {
+					index++;
+				}
+			} else if (event.key === "j" || event.key === "ArrowUp") {
+				if (index <= 0) {
+					index = results.length - 1;
+				} else {
+					index--;
+				}
+			}
+
+			results[index].focus();
+			event.preventDefault();
+		}
+	});
 })();

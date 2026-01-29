@@ -241,7 +241,7 @@ aside {
 	}
 
 	.opt {
-		color: #676f88;
+		color: var(--muted);
 		cursor: pointer;
 		background-color: #0000;
 		border: none;
@@ -356,6 +356,12 @@ aside {
 
 	&:hover {
 		text-decoration: underline;
+	}
+
+	&:focus:not(:active) {
+		outline: 2px solid #89b4fa;
+		border-radius: 4px;
+		outline-offset: 3px;
 	}
 }
 
@@ -939,10 +945,13 @@ aside {
 		ol {
 			padding-left: 1.4em;
 			margin: 0.75em 0;
+			display: flex;
+			flex-direction: column;
 		}
 
 		li {
 			margin: 0.3em 0;
+			margin-bottom: -1px;
 		}
 
 		blockquote {
@@ -2399,6 +2408,12 @@ aside {
 		color: inherit;
 		align-items: flex-start;
 
+		&:focus:not(:active) {
+			outline: 2px solid #89b4fa;
+			border-radius: 4px;
+			outline-offset: 3px;
+		}
+
 		@media (max-width: 600px) {
 			gap: 14px;
 		}
@@ -2517,10 +2532,6 @@ aside {
 		justify-content: center;
 		color: var(--muted);
 
-		svg {
-			opacity: 0.4;
-		}
-
 		@media (max-width: 600px) {
 			width: 100px;
 			height: 72px;
@@ -2587,23 +2598,23 @@ aside {
 				font-weight: 500;
 				margin-bottom: 0px;
 				display: flex;
-        align-items: center;
-        gap: 6px;
+				align-items: center;
+				gap: 6px;
 
-        a {
-          color: var(--muted);
-          display: flex;
-          align-items: center;
+				a {
+					color: var(--muted);
+					display: flex;
+					align-items: center;
 
-          &:hover {
-            color: var(--blue);
-          }
-        }
+					&:hover {
+						color: var(--blue);
+					}
+				}
 
-        svg {
-          width: 16px;
-          height: 16px;
-        }
+				svg {
+					width: 16px;
+					height: 16px;
+				}
 			}
 		}
 
@@ -2620,7 +2631,7 @@ aside {
 				height: 0;
 
 				&:checked + .slider {
-					background-color: #0551CE;
+					background-color: #0551ce;
 				}
 
 				&:checked + .slider:before {
@@ -2648,10 +2659,10 @@ aside {
 					position: absolute;
 					bottom: 3px;
 					left: 3px;
-					transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+					transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 				}
 			}
-}
+		}
 	}
 }
 
@@ -2667,5 +2678,5 @@ aside {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.05s;
+	animation-duration: 0.05s;
 }
