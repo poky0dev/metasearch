@@ -28,6 +28,12 @@ if you'd like to self-host your own instance, you can either run the js directly
 
 a prebuilt docker image will be published soon. as for hosting the javascript, cloning the repo, installing modules and running `bun run start` should be enough.
 
+### serverless
+self-hosting does not currently support serverless due to the jwt tokens rotating on restarts, the brave challenge solving system, and the delay in importing bangs
+
+### proxies
+we recommend using proxies to distribute requests when self-hosting. you can set proxies using `CYCLETLS_PROXY`.
+
 ### license
 
 all code is licensed under aGPL-v3.0. see [LICENSE](./LICENSE) for more details.
