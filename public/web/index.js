@@ -190,9 +190,6 @@
 					article.classList.add("youtube-featured");
 				}
 			}
-
-			if (sourceHost === "genius.com" || sourceHost.endsWith(".genius.com")) {
-			}
 		}
 
 		hasHadWebResult = true;
