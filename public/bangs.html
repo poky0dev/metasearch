@@ -238,11 +238,7 @@
                   .bang-title {
                     font-size: 16px;
                     white-space: nowrap;
-                    -webkit-mask-image: linear-gradient(
-                      to right,
-                      #000 90%,
-                      #0000
-                    );
+                    -webkit-mask-image: linear-gradient(to right, #000 90%, #0000);
                     mask-image: linear-gradient(to right, #000 90%, #0000);
                     font-weight: 500;
                   }
@@ -402,9 +398,7 @@
         try {
           let zipEntries = ZIP_CACHE.get(bucket);
           if (!zipEntries) {
-            const resp = await fetch(
-              `https://files.helium.computer/favicons/${bucket}.zip`,
-            );
+            const resp = await fetch(`https://files.helium.computer/favicons/${bucket}.zip`);
             if (!resp.ok) return null;
             const buffer = await resp.arrayBuffer();
             zipEntries = fflate.unzipSync(new Uint8Array(buffer));
@@ -538,18 +532,13 @@
         let results = [];
 
         if (query === "") {
-          results = allBangs
-            .filter((b) => b.triggers.some((t) => FEATURED.has(t)))
-            .slice(0, 12);
+          results = allBangs.filter((b) => b.triggers.some((t) => FEATURED.has(t))).slice(0, 12);
         } else {
           const scored = allBangs.map((bang) => ({
             bang,
             score: getScore(bang, query),
           }));
-          scored.sort(
-            (a, b) =>
-              b.score - a.score || a.bang.name.length - b.bang.name.length,
-          );
+          scored.sort((a, b) => b.score - a.score || a.bang.name.length - b.bang.name.length);
           if (scored.length > 0) {
             const topScore = scored[0].score;
             results = scored
@@ -616,8 +605,7 @@
             .slice(0, 4)
             .map((x) => `!${x}`)
             .join(", ");
-          triggers.textContent =
-            displayStr + (sortedTriggers.length > 4 ? "..." : "");
+          triggers.textContent = displayStr + (sortedTriggers.length > 4 ? "..." : "");
 
           const urlLink = document.createElement("a");
           urlLink.className = "bang-url";

@@ -157,21 +157,13 @@
     <meta name="color-scheme" content="dark" />
     <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <link
-      rel="preload"
-      href="/s/inter-var-v4.woff2"
-      as="font"
-      type="font/woff2"
-    />
+    <link rel="preload" href="/s/inter-var-v4.woff2" as="font" type="font/woff2" />
   </head>
   <body>
     <div class="body">
       <main>
         <h1>making sure you're not a bot!</h1>
-        <p>
-          you won't see this again until after 100 searches or 2 days, whichever
-          comes first.
-        </p>
+        <p>you won't see this again until after 100 searches or 2 days, whichever comes first.</p>
         <div id="progress">
           <div id="bar"></div>
         </div>
@@ -220,8 +212,7 @@
                 self.postMessage({
                   found: true,
                   jobIndex: jobIndex,
-                  nonce: attempts,
-                  attempts: attempts + 1
+                  nonce: attempts
                 });
                 return;
               }
@@ -257,8 +248,7 @@
               errorEl.textContent = e.data.error;
               errorEl.style.display = "block";
               document.querySelector("#bar").style.backgroundColor = "#f38ba8";
-              document.querySelector("#progress").style.outlineColor =
-                "#f38ba8";
+              document.querySelector("#progress").style.outlineColor = "#f38ba8";
               resolve({ error: e.data.error });
               return;
             }
@@ -288,10 +278,7 @@
       (async () => {
         try {
           const concurrency = navigator.hardwareConcurrency || 4;
-          const queue = Array.from(
-            { length: __jobs__ },
-            (_, i) => () => runJob(i),
-          );
+          const queue = Array.from({ length: __jobs__ }, (_, i) => () => runJob(i));
 
           for (let i = 0; i < queue.length; i += concurrency) {
             const batch = queue.slice(i, i + concurrency).map((fn) => fn());
@@ -304,46 +291,35 @@
 
           solutions.sort((a, b) => a.jobIndex - b.jobIndex);
 
-          const orderedSolutions = solutions.map(
-            ({ nonce, attempts }) => nonce,
-          );
+          const orderedSolutions = solutions.map(({ nonce }) => nonce);
 
           const cookiesEnabled = () => {
             try {
               document.cookie = "test=1; path=/";
               const supported = document.cookie.indexOf("test=") !== -1;
-              document.cookie =
-                "test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+              document.cookie = "test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
               return supported;
             } catch {
               return false;
             }
           };
 
-          const response = await fetch("/challenge", {
+          const response = await fetch("/c/%%challengeJwt%%", {
             method: "POST",
             headers: {
               "X-Galileo-Csrf": "1",
               "Content-Type": "application/json",
             },
-            body: JSON.stringify([
-              "%%challengeJwt%%",
-              orderedSolutions,
-              cookiesEnabled(),
-            ]),
+            body: JSON.stringify([orderedSolutions, cookiesEnabled()]),
           });
 
           const data = await response.json();
 
-          if (!response.ok) {
-            throw new Error(data.error || "verification failed");
-          }
-          
           const url = new URL("%%redirect%%", window.location.origin);
           if (data.pass) {
-            url.searchParams.set('pass', data.pass);
+            url.searchParams.set("pass", data.pass);
           }
-          
+
           window.location.href = url.href;
         } catch (err) {
           errorEl.textContent = err.message || "something went wrong";

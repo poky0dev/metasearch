@@ -11,9 +11,11 @@ no tracking is used by default, and you can search the web with no cookies or ac
 we do not log any type of data and your searches are never stored or analyzed.
 
 ### bangs, rich answers, snippets
+
 similar to duckduckgo, you can use !bangs to search other sites directly. instant answers for calculations, weather, crypto prices, and more are available right on the results page.
 
 ### fast and better dx
+
 unlike html-only search engines, we start by serving css and html, only sending answers in js later, which results in a much better experience.
 
 most keyboard shortcuts are also supported, and the image tab supports a built-in ai slop remover. on chromium-based browsers, you'll also benefit from view transitions between tabs.
@@ -29,9 +31,11 @@ if you'd like to self-host your own instance, you can either run the js directly
 a prebuilt docker image will be published soon. as for hosting the javascript, cloning the repo, installing modules and running `bun run start` should be enough.
 
 ### serverless
+
 self-hosting does not currently support serverless due to the jwt tokens rotating on restarts, the brave challenge solving system, and the delay in importing bangs
 
 ### proxies
+
 we recommend using proxies to distribute requests when self-hosting. you can set proxies using `CYCLETLS_PROXY`.
 
 ### license

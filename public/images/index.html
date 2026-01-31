@@ -17,12 +17,7 @@
       rel="search"
       type="application/opensearchdescription+xml"
     />
-    <link
-      rel="preload"
-      href="/s/inter-var-v4.woff2"
-      as="font"
-      type="font/woff2"
-    />
+    <link rel="preload" href="/s/inter-var-v4.woff2" as="font" type="font/woff2" />
   </head>
   <body>
     <header>
@@ -31,7 +26,7 @@
         <div class="search-container">
           <div class="search-bar">
             <input name="q" value="%%inputValue%%" placeholder="search…" />
-            <input type="hidden" name="pass">
+            <input type="hidden" name="pass" />
 
             <button title="search!" type="submit">
               <svg
@@ -53,9 +48,7 @@
       </form>
       <nav class="tabs">
         <a href="/?q=%%inputValueEncoded%%&pass" class="tab">web</a>
-        <a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab active"
-          >images</a
-        >
+        <a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab active">images</a>
         <a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab">news</a>
 
         <button class="opt" id="options-btn">
@@ -101,9 +94,7 @@
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                   <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
                   <path d="M12 17l0 .01" />
-                  <path
-                    d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4"
-                  /></svg
+                  <path d="M12 13.5a1.5 1.5 0 0 1 1 -1.5a2.6 2.6 0 1 0 -3 -4" /></svg
               ></a>
             </div>
           </div>
@@ -118,11 +109,7 @@
     <div class="body images-body">
       <main class="images-main">
         <div class="images-grid" id="images-grid"></div>
-        <div
-          id="loading-indicator"
-          class="loading-indicator"
-          style="display: none"
-        >
+        <div id="loading-indicator" class="loading-indicator" style="display: none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -143,6 +130,6 @@
       </main>
     </div>
 
-    <script src="/a/%%jsJwt%%"></script>
+    <script src="/p/%%jsJwt%%"></script>
   </body>
 </html>

@@ -17,12 +17,7 @@
       rel="search"
       type="application/opensearchdescription+xml"
     />
-    <link
-      rel="preload"
-      href="/s/inter-var-v4.woff2"
-      as="font"
-      type="font/woff2"
-    />
+    <link rel="preload" href="/s/inter-var-v4.woff2" as="font" type="font/woff2" />
   </head>
   <body>
     <header>
@@ -31,7 +26,7 @@
         <div class="search-container">
           <div class="search-bar">
             <input name="q" value="%%inputValue%%" placeholder="search…" />
-            <input type="hidden" name="pass">
+            <input type="hidden" name="pass" />
 
             <button title="search!" type="submit">
               <svg
@@ -54,20 +49,14 @@
       <nav class="tabs">
         <a href="/?q=%%inputValueEncoded%%&pass" class="tab">web</a>
         <a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab">images</a>
-        <a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab active"
-          >news</a
-        >
+        <a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab active">news</a>
       </nav>
     </header>
 
     <div class="body news-body">
       <main class="news-main">
         <div class="news-results" id="news-results"></div>
-        <div
-          id="loading-indicator"
-          class="loading-indicator"
-          style="display: none"
-        >
+        <div id="loading-indicator" class="loading-indicator" style="display: none">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -88,6 +77,6 @@
       </main>
     </div>
 
-    <script src="/a/%%jsJwt%%"></script>
+    <script src="/p/%%jsJwt%%"></script>
   </body>
 </html>
