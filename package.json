@@ -11,8 +11,8 @@
     "forever": "pm2 start ./src/index.js --name metasearch"
   },
   "dependencies": {
+    "@cap.js/server": "^4.0.5",
     "acorn": "^8.15.0",
-    "argon2": "^0.44.0",
     "cycletls": "^2.0.5",
     "elysia": "^1.4.16",
     "jose": "^6.1.3",

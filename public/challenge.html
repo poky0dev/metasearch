@@ -30,15 +30,6 @@
           "Helvetica Neue",
           sans-serif;
 
-        --sh-class: #b4befe;
-        --sh-identifier: #a6e3a1;
-        --sh-sign: #cdd6f4;
-        --sh-property: #94e2d5;
-        --sh-entity: #89dceb;
-        --sh-jsxliterals: #fab387;
-        --sh-string: #f9e2af;
-        --sh-keyword: #89b4fa;
-        --sh-comment: #6c7086;
         --text: #cdd6f4;
         --bg: #1f1e2e;
         --surface0: #313244;
@@ -109,31 +100,33 @@
           font-size: 16px;
           max-width: 326px;
           line-height: 1.5;
+          margin-bottom: 0px;
           margin-top: 4px;
           color: #9aa2be;
         }
       }
 
-      #progress {
-        width: min(20rem, 90%);
-        height: 2em;
-        border-radius: 1rem;
-        overflow: hidden;
-        margin: 1rem 0 2rem;
-        outline-offset: 2px;
-        outline: #89b4fa solid 2px;
-        margin-top: 2em;
+      .cap-container {
+        margin-top: 1.5em;
+      }
 
-        #bar {
-          width: 1%;
-          height: 100%;
-          background: #89b4fa;
-          transition: width 0.15s;
-        }
+      cap-widget {
+        --cap-background: var(--surface0);
+        --cap-border-color: var(--surface1);
+        --cap-border-radius: 14px;
+        --cap-color: var(--text);
+        --cap-checkbox-border: 1px solid var(--muted);
+        --cap-checkbox-border-radius: 6px;
+        --cap-checkbox-background: var(--bg);
+        --cap-spinner-color: var(--blue);
+        --cap-spinner-background-color: var(--surface1);
+        --cap-font:
+          InterVar, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+          Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
       }
 
       .pb {
-        margin-top: -2px;
+        margin-top: 24px;
         color: #9aa2be;
         text-decoration: none;
         opacity: 0.8;
@@ -164,156 +157,64 @@
       <main>
         <h1>making sure you're not a bot!</h1>
         <p>you won't see this again until after 100 searches or 2 days, whichever comes first.</p>
-        <div id="progress">
-          <div id="bar"></div>
+
+        <div class="cap-container">
+          <cap-widget
+            id="cap"
+            data-cap-api-endpoint="/c/cap/"
+            data-cap-i18n-initial-state="I'm a human"
+            data-cap-i18n-verifying-label="Verifying..."
+            data-cap-i18n-solved-label="Verified!"
+            data-cap-i18n-error-label="Error — click to retry"
+          ></cap-widget>
         </div>
+
         <div id="error" class="error" style="display: none"></div>
 
         <a href="https://capjs.js.org" class="pb">powered by cap</a>
       </main>
     </div>
 
+    <script
+      src="https://cdn.jsdelivr.net/npm/@cap.js/widget@0.1.34"
+      onload="document.querySelector('#cap').solve()"
+    ></script>
+
     <script type="module">
-      const progressBar = document.getElementById("bar");
-      const errorEl = document.getElementById("error");
+      const widget = document.querySelector("#cap");
+      const errorEl = document.querySelector("#error");
 
-      const workerCode = `
-        self.onmessage = async (e) => {
-          importScripts('${window.location.origin}/s/argon2.js');
-
-          const { seed, jobIndex } = e.data;
-          const encoder = new TextEncoder();
-
-          const saltInput = encoder.encode(\`%%seed%%:\${jobIndex}\`);
-          const saltHashBuf = await crypto.subtle.digest("SHA-256", saltInput);
-          const salt = new Uint8Array(saltHashBuf).slice(0, 16);
-
-          let attempts = 0;
-
-          while (true) {
-            const input = \`%%seed%%:\${jobIndex}:\${attempts}\`;
-
-            try {
-              const result = await argon2.hash({
-                pass: encoder.encode(input),
-                salt: salt,
-                type: argon2.ArgonType.Argon2d,
-                mem: __mem__,
-                time: __time__,
-                parallelism: 1,
-                hashLen: __hashLen__
-              });
-
-              const hashHex = Array.from(new Uint8Array(result.hash))
-                .map(b => b.toString(16).padStart(2, "0"))
-                .join("");
-
-              if (hashHex.startsWith("%%prefix%%")) {
-                self.postMessage({
-                  found: true,
-                  jobIndex: jobIndex,
-                  nonce: attempts
-                });
-                return;
-              }
-
-              attempts++;
-            } catch (error) {
-              self.postMessage({ found: false, error: error.message });
-              return;
-            }
-          }
-        };
-      `;
-
-      const workerBlob = new Blob([workerCode], {
-        type: "application/javascript",
-      });
-      const workerUrl = URL.createObjectURL(workerBlob);
-
-      let completed = 0;
-      const solutions = [];
-
-      const runJob = (jobIndex) =>
-        new Promise((resolve) => {
-          const worker = new Worker(workerUrl);
-          worker.postMessage({
-            jobIndex: jobIndex,
-          });
-
-          worker.onmessage = (e) => {
-            worker.terminate();
-
-            if (e.data.error) {
-              errorEl.textContent = e.data.error;
-              errorEl.style.display = "block";
-              document.querySelector("#bar").style.backgroundColor = "#f38ba8";
-              document.querySelector("#progress").style.outlineColor = "#f38ba8";
-              resolve({ error: e.data.error });
-              return;
-            }
-
-            if (e.data.found) {
-              completed++;
-              progressBar.style.width = `${(completed / __jobs__) * 100}%`;
-              solutions.push({
-                jobIndex: e.data.jobIndex,
-                nonce: e.data.nonce,
-                attempts: e.data.attempts,
-              });
-              resolve(e.data);
-            }
-          };
-
-          worker.onerror = (err) => {
-            worker.terminate();
-            errorEl.textContent = err.message;
-            errorEl.style.display = "block";
-            document.querySelector("#bar").style.backgroundColor = "#f38ba8";
-            document.querySelector("#progress").style.outlineColor = "#f38ba8";
-            resolve({ error: err.message });
-          };
-        });
-
-      (async () => {
+      const cookiesEnabled = () => {
         try {
-          const concurrency = navigator.hardwareConcurrency || 4;
-          const queue = Array.from({ length: __jobs__ }, (_, i) => () => runJob(i));
+          document.cookie = "test=1; path=/";
+          const supported = document.cookie.indexOf("test=") !== -1;
+          document.cookie = "test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+          return supported;
+        } catch {
+          return false;
+        }
+      };
 
-          for (let i = 0; i < queue.length; i += concurrency) {
-            const batch = queue.slice(i, i + concurrency).map((fn) => fn());
-            const results = await Promise.all(batch);
+      widget.addEventListener("solve", async (e) => {
+        const capToken = e.detail.token;
 
-            if (results.some((r) => r.error)) {
-              throw new Error(results.find((r) => r.error).error);
-            }
-          }
-
-          solutions.sort((a, b) => a.jobIndex - b.jobIndex);
-
-          const orderedSolutions = solutions.map(({ nonce }) => nonce);
-
-          const cookiesEnabled = () => {
-            try {
-              document.cookie = "test=1; path=/";
-              const supported = document.cookie.indexOf("test=") !== -1;
-              document.cookie = "test=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-              return supported;
-            } catch {
-              return false;
-            }
-          };
-
-          const response = await fetch("/c/%%challengeJwt%%", {
+        try {
+          const response = await fetch(window.location.pathname, {
             method: "POST",
             headers: {
               "X-Galileo-Csrf": "1",
               "Content-Type": "application/json",
             },
-            body: JSON.stringify([orderedSolutions, cookiesEnabled()]),
+            body: JSON.stringify({
+              capToken,
+              doCookie: cookiesEnabled(),
+            }),
           });
 
           const data = await response.json();
+          if (!response.ok || data?.error) {
+            throw new Error(data?.error || "Verification failed");
+          }
 
           const url = new URL("%%redirect%%", window.location.origin);
           if (data.pass) {
@@ -324,10 +225,14 @@
         } catch (err) {
           errorEl.textContent = err.message || "something went wrong";
           errorEl.style.display = "block";
-          document.querySelector("#bar").style.backgroundColor = "#f38ba8";
-          document.querySelector("#progress").style.outlineColor = "#f38ba8";
         }
-      })();
+      });
+
+      widget.addEventListener("error", (e) => {
+        errorEl.textContent = e.detail?.message || e.message || e || "something went wrong";
+        errorEl.style.display = "block";
+      });
     </script>
   </body>
+  <script defer data-domain="metasearch.tiago.zip" src="https://a.tiago.zip/js/script.outbound-links.js"></script>
 </html>
