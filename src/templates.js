@@ -1,111 +1,75 @@
-import { transform } from "lightningcss";
-import { minify } from "terser";
+import { env } from "cloudflare:workers";
 
-let cssTemplate,
-  searchTemplate,
-  searchJavaScript,
-  imagesTemplate,
-  imagesJavaScript,
-  newsTemplate,
-  newsJavaScript;
+let cssCache,
+	webCache,
+	webJsCache,
+	imagesCache,
+	imagesJsCache,
+	newsCache,
+	newsJsCache;
+
+async function readAsset(path) {
+	let resp = await env.ASSETS.fetch(
+		new Request(`https://assets${path}`),
+	);
+	if (resp.status >= 300 && resp.status < 400) {
+		const location = resp.headers.get("location");
+		if (location) {
+			resp = await env.ASSETS.fetch(
+				new Request(new URL(location, `https://assets${path}`)),
+			);
+		}
+	}
+	return resp.text();
+}
 
 export const css = async () => {
-  if (process.env.NODE_END !== "development" && cssTemplate) return cssTemplate;
-
-  const css = transform({
-    filename: "style.css",
-    code: Buffer.from(await Bun.file("./public/search.css").text()),
-    minify: true,
-    sourceMap: false,
-  }).code;
-
-  cssTemplate = css.toString();
-  return cssTemplate;
+	if (cssCache) return cssCache;
+	cssCache = await readAsset("/search.css");
+	return cssCache;
 };
 
 export const web = async () => {
-  if (process.env.NODE_END !== "development" && searchTemplate)
-    return searchTemplate;
-
-  const code = (await Bun.file("./public/web/index.html").text()).replace(
-    "/**css**/",
-    await css(),
-  );
-
-  searchTemplate = code;
-  return code;
+	if (webCache) return webCache;
+	webCache = (await readAsset("/web/index.html")).replace(
+		"/**css**/",
+		await css(),
+	);
+	return webCache;
 };
 
 export const webJs = async () => {
-  if (process.env.NODE_END !== "development" && searchJavaScript)
-    return searchJavaScript;
-
-  const { code } = await minify(
-    await Bun.file("./public/web/index.js").text(),
-    {
-      sourceMap: false,
-      mangle: true,
-    },
-  );
-
-  searchJavaScript = code;
-  return code;
+	if (webJsCache) return webJsCache;
+	webJsCache = await readAsset("/web/index.js");
+	return webJsCache;
 };
 
 export const images = async () => {
-  if (process.env.NODE_END !== "development" && imagesTemplate)
-    return imagesTemplate;
-
-  const code = (await Bun.file("./public/images/index.html").text()).replace(
-    "/**css**/",
-    await css(),
-  );
-
-  imagesTemplate = code;
-  return code;
+	if (imagesCache) return imagesCache;
+	imagesCache = (await readAsset("/images/index.html")).replace(
+		"/**css**/",
+		await css(),
+	);
+	return imagesCache;
 };
 
 export const imagesJs = async () => {
-  if (process.env.NODE_END !== "development" && imagesJavaScript)
-    return imagesJavaScript;
-
-  const { code } = await minify(
-    await Bun.file("./public/images/index.js").text(),
-    {
-      sourceMap: false,
-      mangle: true,
-    },
-  );
-
-  imagesJavaScript = code;
-  return code;
+	if (imagesJsCache) return imagesJsCache;
+	imagesJsCache = await readAsset("/images/index.js");
+	return imagesJsCache;
 };
 
 export const news = async () => {
-  if (process.env.NODE_END !== "development" && newsTemplate)
-    return newsTemplate;
-
-  const code = (await Bun.file("./public/news/index.html").text()).replace(
-    "/**css**/",
-    await css(),
-  );
-
-  newsTemplate = code;
-  return code;
+	if (newsCache) return newsCache;
+	newsCache = (await readAsset("/news/index.html")).replace(
+		"/**css**/",
+		await css(),
+	);
+	return newsCache;
 };
 
 export const newsJs = async () => {
-  if (process.env.NODE_END !== "development" && newsJavaScript)
-    return newsJavaScript;
-
-  const { code } = await minify(
-    await Bun.file("./public/news/index.js").text(),
-    {
-      sourceMap: false,
-      mangle: true,
-    },
-  );
-
-  newsJavaScript = code;
-  return code;
+	if (newsJsCache) return newsJsCache;
+	newsJsCache = await readAsset("/news/index.js");
+	return newsJsCache;
 };

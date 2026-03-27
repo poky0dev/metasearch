@@ -1,0 +1,12 @@
+name = "metasearch"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "none"
+
+# Set secrets via: wrangler secret put JWT_SECRET
+# [vars]

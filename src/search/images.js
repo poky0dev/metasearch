@@ -1,6 +1,5 @@
 import { parseExpressionAt } from "acorn";
 import braveFetch from "./braveFetch.js";
-import { buildCaptchaResponse, isCaptchaPage } from "./captcha.js";
 
 const simplify = (node) => {
   if (!node) return null;
@@ -73,11 +72,8 @@ export default async function searchImages(query, page = 0) {
           : null,
       })),
     };
-  } catch {
-    if (isCaptchaPage(raw)) {
-      return buildCaptchaResponse(raw);
-    }
-
+  } catch (e) {
+    console.error("image search parse error:", e);
     return {
       more_results_available: false,
       results: [],

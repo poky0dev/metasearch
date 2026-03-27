@@ -6,7 +6,7 @@
 
 ### private by design
 
-no tracking is used by default, and you can search the web with no cookies or accounts. argon2d proof-of-work is used to prevent automation and abuse
+no tracking is used by default, and you can search the web with no cookies or accounts.
 
 we do not log any type of data and your searches are never stored or analyzed.
 
@@ -26,21 +26,43 @@ we implement most of brave's rich answer features, including calculator, color p
 
 ### self-hosting
 
-if you'd like to self-host your own instance, you can either run the js directly with pm2 or use docker.
+metasearch runs on cloudflare workers with static assets. to self-host:
 
-a prebuilt docker image will be published soon. as for hosting the javascript, cloning the repo, installing modules and running `bun run start` should be enough.
+```bash
+# clone and install
+git clone https://github.com/tiagorangel1/metasearch.git
+cd metasearch
+bun install
 
-####  serverless
+# set your jwt secret (used to sign search tokens)
+wrangler secret put JWT_SECRET
 
-self-hosting does not currently support serverless due to the jwt tokens rotating on restarts, the brave challenge solving system, and the delay in importing bangs
+# deploy to cloudflare workers
+bun run deploy
+```
 
-#### proxies
+#### updating bangs
 
-we recommend using proxies to distribute requests when self-hosting. you can set proxies using `CYCLETLS_PROXY`.
+bangs are embedded in the bundle for zero-latency lookups. to refresh them:
 
-#### disabling challenges
+```bash
+bun run bangs
+bun run deploy
+```
 
-if you're self-hosting just for yourself, you might want to disable the PoW by setting `process.env.DISABLE_CHALLENGES` to `true`
+#### local development
+
+```bash
+# create a .env file with a dev secret
+echo 'JWT_SECRET=dev-secret' > .env
+
+# start local dev server
+bun run dev
+```
+
+#### custom domain
+
+after deploying, you can add a custom domain in the cloudflare dashboard under workers & pages > metasearch > settings > domains & routes.
 
 ### license
 

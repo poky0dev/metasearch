@@ -1,12 +1,5 @@
 import { parseExpressionAt } from "acorn";
 import braveFetch from "./braveFetch.js";
-import {
-  buildCaptchaResponse,
-  endCaptchaFlow,
-  getTokenKeys,
-  isCaptchaPage,
-  submitCaptcha,
-} from "./captcha.js";
 
 const simplify = (node) => {
   if (!node) return null;
@@ -365,12 +358,8 @@ export default async function search(query, page = 0) {
         mixed: simplified.body.response.mixed?.main || [],
       },
     };
-  } catch {
-    if (isCaptchaPage(raw)) {
-      console.log("captchad");
-      return buildCaptchaResponse(raw);
-    }
+  } catch (e) {
+    console.error("search parse error:", e);
+    return { results: {}, more_results_available: false };
   }
 }
-
-export { getTokenKeys, submitCaptcha, endCaptchaFlow };

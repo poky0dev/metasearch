@@ -1,6 +1,5 @@
 import { parseExpressionAt } from "acorn";
 import braveFetch from "./braveFetch.js";
-import { buildCaptchaResponse, isCaptchaPage } from "./captcha.js";
 
 const simplify = (node) => {
   if (!node) return null;
@@ -78,11 +77,8 @@ export default async function searchNews(query, page = 0) {
         is_live: r.is_live || false,
       })),
     };
-  } catch {
-    if (isCaptchaPage(raw)) {
-      return buildCaptchaResponse(raw);
-    }
-
+  } catch (e) {
+    console.error("news search parse error:", e);
     return {
       more_results_available: false,
       results: [],
