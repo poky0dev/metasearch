@@ -30,7 +30,7 @@ metasearch runs on cloudflare workers with static assets. to self-host:
 
 ```bash
 # clone and install
-git clone https://github.com/tiagorangel1/metasearch.git
+git clone https://github.com/tiagozip/metasearch.git
 cd metasearch
 bun install
 
