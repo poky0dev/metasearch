@@ -20,7 +20,7 @@ unlike html-only search engines, we start by serving css and html, only sending 
 
 most keyboard shortcuts are also supported, and the image tab supports a built-in ai slop remover. on chromium-based browsers, you'll also benefit from view transitions between tabs.
 
-### rich answers
+### rich answers & maps
 
 we implement most of brave's rich answer features, including calculator, color picker, timer, weather, cryptocurrency prices, and more.
 

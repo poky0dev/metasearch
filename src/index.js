@@ -4,6 +4,7 @@ import { CloudflareAdapter } from "elysia/adapter/cloudflare-worker";
 import { jwtVerify, SignJWT } from "jose";
 import bang from "./bangs.js";
 import searchImages from "./search/images.js";
+import * as maps from "./search/maps.js";
 import searchMixed from "./search/mixed.js";
 import searchNews from "./search/news.js";
 import * as templates from "./templates.js";
@@ -38,7 +39,7 @@ export default new Elysia({ adapter: CloudflareAdapter })
     set.headers["content-type"] = "text/html";
     set.headers.Link = `</s/inter-var-v4.woff2>; rel="preload"; as="font"`;
 
-    if (!q) {
+    if (!q && type !== "maps") {
       set.headers["cache-control"] = "public, max-age=86400";
       const resp = await env.ASSETS.fetch(
         new Request("https://assets/index.html"),
@@ -47,13 +48,17 @@ export default new Elysia({ adapter: CloudflareAdapter })
       return html.replace("%%colo%%", request.cf?.colo || "unknown");
     }
 
-    const bangUrl = bang(q);
-    if (bangUrl) {
-      return redirect(bangUrl);
+    if (q) {
+      const bangUrl = bang(q);
+      if (bangUrl) {
+        return redirect(bangUrl);
+      }
     }
 
     let template;
-    if (type === "images") {
+    if (type === "maps") {
+      template = await templates.maps();
+    } else if (type === "images") {
       template = await templates.images();
     } else if (type === "news") {
       template = await templates.news();
@@ -63,17 +68,24 @@ export default new Elysia({ adapter: CloudflareAdapter })
 
     set.headers["cache-control"] = "public, max-age=300";
 
+    const qSafe = q || "";
+    const pageTitle = qSafe
+      ? qSafe.replace("<", "&lt;").replaceAll(">", "&gt;")
+      : type === "maps"
+        ? "maps"
+        : "search";
+
     const html = template
-      .replace("%%pageTitle%%", q.replace("<", "&lt;").replaceAll(">", "&gt;"))
-      .replace("%%jsJwt%%", await sign({ s: q, t: type }, "10m"))
+      .replace("%%pageTitle%%", pageTitle)
+      .replace("%%jsJwt%%", await sign({ s: qSafe, t: type }, "10m"))
       .replaceAll(
         "%%inputValue%%",
-        q
+        qSafe
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;"),
       )
-      .replaceAll("%%inputValueEncoded%%", encodeURIComponent(q))
+      .replaceAll("%%inputValueEncoded%%", encodeURIComponent(qSafe))
       .replaceAll("&pass", "")
       .replaceAll('<input type="hidden" name="pass">', "");
 
@@ -92,7 +104,10 @@ export default new Elysia({ adapter: CloudflareAdapter })
 
     let template, results;
 
-    if (payload.t === "images") {
+    if (payload.t === "maps") {
+      template = await templates.mapsJs();
+      results = { initialQuery: payload.s || null };
+    } else if (payload.t === "images") {
       template = await templates.imagesJs();
       results = await searchImages(payload.s);
     } else if (payload.t === "news") {
@@ -185,6 +200,84 @@ export default new Elysia({ adapter: CloudflareAdapter })
       body: t.String(),
     },
   )
+  .post("/m", async ({ body, set, headers }) => {
+    const [token] = body;
+
+    if (headers["x-galileo-hint"] !== "73G8yHKfX2bZqNwDLe6g2NYnyeHJXTFV") return { suggestions: [] }
+
+    function xor(str) { return [...str].map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ "filed in quiet ink a body claimed by no one words refuse their cage copyright tiago zip".charCodeAt(i % 87))).join(""); }
+
+    function decode(token) {
+      const bin = atob(token);
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      const r = new TextDecoder().decode(bytes);
+
+      const x = [...r].reverse().join("");
+      return xor(x);
+    }
+
+    const [long, _q, lat] = JSON.parse(decode(token));
+    const q = atob(_q.split("").reverse().join(""));
+
+    set.headers["content-type"] = "application/json";
+    set.headers["cache-control"] = "public, max-age=120";
+    if (!q) return { suggestions: [] };
+
+    const suggestions = (await maps.mapboxSearch(q, [lat, long])).map((suggestion) => [
+      suggestion.coords, suggestion.name, suggestion.place, suggestion.poi
+    ]);
+
+    return { suggestions };
+  })
+  .post("/d", async ({ body, set, headers }) => {
+    const [token] = body;
+
+    if (headers["x-galileo-hint"] !== "73G8yHKfX2bZqNwDLe6g2NYnyeHJXTFV") {
+      return { name: "", lat: 0, lng: 0, place: null };
+    }
+
+    function xor(str) {
+      return [...str]
+        .map((c, i) =>
+          String.fromCharCode(
+            c.charCodeAt(0) ^
+              "filed in quiet ink a body claimed by no one words refuse their cage copyright tiago zip".charCodeAt(
+                i % 87,
+              ),
+          ),
+        )
+        .join("");
+    }
+
+    function decode(token) {
+      const bin = atob(token);
+      const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+      const r = new TextDecoder().decode(bytes);
+      const x = [...r].reverse().join("");
+      return xor(x);
+    }
+
+    let lng, lat, q;
+    try {
+      const [_lng, _q, _lat] = JSON.parse(decode(token));
+      lng = Number(_lng);
+      lat = Number(_lat);
+      q = new TextDecoder().decode(
+        Uint8Array.from(atob(_q.split("").reverse().join("")), (c) =>
+          c.charCodeAt(0),
+        ),
+      );
+    } catch {
+      return { name: "", lat: 0, lng: 0, place: null };
+    }
+
+    set.headers["content-type"] = "application/json";
+    set.headers["cache-control"] = "public, max-age=300";
+    if (!q || !isFinite(lat) || !isFinite(lng)) {
+      return { name: q || "", lat: lat || 0, lng: lng || 0, place: null };
+    }
+    return await maps.enrichPlace(q, lat, lng);
+  })
   .get("/s/:file", async ({ set, params }) => {
     if (params.file.includes("/") || params.file.includes("..")) return "no";
 

@@ -167,7 +167,8 @@
     }
 
     if (!hasHadWebResult) {
-      const sourceHost = new URL(url).hostname;
+      const u = new URL(url);
+      const sourceHost = u.hostname.replace(/^www\./, "").toLowerCase();
 
       if (sourceHost === "youtube.com" || sourceHost.endsWith(".youtube.com")) {
         const videoIdMatch = url.match(/[?&]v=([^&]+)/);
@@ -185,6 +186,84 @@
           document.querySelector("#results-all").append(iframe);
 
           article.classList.add("youtube-featured");
+        }
+      }
+
+      if (sourceHost === "polymarket.com" || sourceHost.endsWith(".polymarket.com")) {
+        const eventMatch = url.match(/\/event\/([^/?]+)/);
+        if (eventMatch) {
+          const eventSlug = eventMatch[1];
+          const iframe = document.createElement("iframe");
+          iframe.style.cssText = `width:100%;aspect-ratio:730/300;border-radius:1rem;`;
+          iframe.title = "polymarket-market-iframe";
+          iframe.src = `https://embed.polymarket.com/market?event=${eventSlug}&rotate=true&theme=dark&liveactivity=true&buttons=false&border=true&width=730&height=300`;
+          iframe.width = "730";
+          iframe.height = "300";
+          iframe.frameBorder = "0";
+          iframe.loading = "lazy";
+          document.querySelector("#results-all").append(iframe);
+          article.classList.add("youtube-featured");
+        }
+      }
+
+      if (
+        ["whatismyipaddress.com","whatismyip.com","showmyip.com"].includes(sourceHost) &&
+        (u.pathname === "/" || u.pathname === "")
+      ) {
+        const ipFrame = document.createElement("div");
+        ipFrame.style.cssText = `width: 100%;border: 1px solid var(--surface0);border-radius: 8px;margin-bottom: 8px;padding: 16px;`;
+        ipFrame.innerHTML = `<p style="margin-top: 0px;color: var(--subtext);margin-bottom: 10px;">your ip is:</p><p class="ip" style="font-size: 21px;margin: 0px;font-variant-numeric: tabular-nums lining-nums;font-weight: 500;">...</p><p style="margin: 0px;margin-top: 6px;font-size: 15px;color: var(--subtext);display: flex;align-items: center;gap: 6px;" class="ipdata">loading data...</p>`;
+
+        (async () => {
+          const ip = await (await fetch("https://api.country.is/?fields=city,continent,subdivision,postal,location,asn")).json();
+
+          ipFrame.querySelector(".ip").innerText = ip.ip;
+          ipFrame.querySelector(".ipdata").innerHTML = `<img src="https://tiagozip.github.io/asn-data/logos/${ip.asn.number}.png" alt="Organization icon" style="width: 20px;height: 20px;border-radius: 4px;"> ${ip.asn.organization} (AS${ip.asn.number}) • ${ip.city}, ${ip.country}`;
+        })();
+
+        document.querySelector("#results-all").append(ipFrame);
+      }
+      
+      if (sourceHost === "spotify.com" || sourceHost.endsWith(".spotify.com")) {
+        const spotifyMatch = url.match(/\/(track|album|playlist|episode)\/([a-zA-Z0-9]+)/);
+        if (spotifyMatch) {
+          const [, type, id] = spotifyMatch;
+          const iframe = document.createElement("iframe");
+          iframe.style.cssText = `width:100%;aspect-ratio:560/332;border-radius:.75rem;border:1px solid rgb(49, 50, 68);`;
+          iframe.src = `https://open.spotify.com/embed/${type}/${id}?utm_source=metasearch`;
+          iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+          iframe.loading = "lazy";
+          document.querySelector("#results-all").append(iframe);
+          article.classList.add("spotify-featured");
+        }
+      }
+      
+      if (sourceHost === "codepen.io") {
+        const codepenMatch = url.match(/codepen\.io\/([^\/]+)\/pen\/([^/?]+)/);
+        if (codepenMatch) {
+          const [, username, penId] = codepenMatch;
+          const iframe = document.createElement("iframe");
+          iframe.style.cssText = `width:100%;aspect-ratio:560/300;border-radius:6px;border:1px solid rgb(49, 50, 68);`;
+          iframe.src = `https://codepen.io/${username}/embed/preview/${penId}?default-tabs=result&height=520`;
+          iframe.allow = "accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone";
+          iframe.loading = "lazy";
+          iframe.title = "CodePen Embed";
+          document.querySelector("#results-all").append(iframe);
+          article.classList.add("codepen-featured");
+        }
+      }
+      
+      if (sourceHost === "music.apple.com" || sourceHost.endsWith(".music.apple.com")) {
+        const appleMatch = url.match(/\/(album|playlist|song)\/([^?]+)/);
+        if (appleMatch) {
+          const fullPath = url.split("music.apple.com")[1];
+          const iframe = document.createElement("iframe");
+          iframe.style.cssText = `width:100%;height:450px;border-radius:6px;border:1px solid rgb(49, 50, 68);`;
+          iframe.src = `https://embed.music.apple.com${fullPath}`;
+          iframe.allow = "autoplay; encrypted-media";
+          iframe.loading = "lazy";
+          document.querySelector("#results-all").append(iframe);
+          article.classList.add("apple-music-featured");
         }
       }
     }

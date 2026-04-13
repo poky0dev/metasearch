@@ -6,7 +6,9 @@ let cssCache,
 	imagesCache,
 	imagesJsCache,
 	newsCache,
-	newsJsCache;
+	newsJsCache,
+	mapsCache,
+	mapsJsCache;
 
 async function readAsset(path) {
 	let resp = await env.ASSETS.fetch(
@@ -72,4 +74,19 @@ export const newsJs = async () => {
 	if (newsJsCache) return newsJsCache;
 	newsJsCache = await readAsset("/news/index.js");
 	return newsJsCache;
+};
+
+export const maps = async () => {
+	if (mapsCache) return mapsCache;
+	mapsCache = (await readAsset("/maps/index.html")).replace(
+		"/**css**/",
+		await css(),
+	);
+	return mapsCache;
+};
+
+export const mapsJs = async () => {
+	if (mapsJsCache) return mapsJsCache;
+	mapsJsCache = await readAsset("/maps/index.js");
+	return mapsJsCache;
 };

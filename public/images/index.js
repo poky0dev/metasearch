@@ -13,6 +13,26 @@
     return "#";
   };
 
+  const readCookie = (name) => {
+    try {
+      const m = document.cookie.match(
+        new RegExp("(?:^|; )" + name.replace(/[.$?*|{}()[\]\\/+^]/g, "\\$&") + "=([^;]*)"),
+      );
+      return m ? decodeURIComponent(m[1]) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const writeCookie = (name, value) => {
+    try {
+      const oneYear = 60 * 60 * 24 * 365;
+      document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${oneYear}; SameSite=Lax`;
+    } catch {}
+  };
+
+  let detailMode = readCookie("pref_images_detail") === "sidebar" ? "sidebar" : "bar";
+
   let allImages = [];
   let selectedIndex = -1;
   let detailPanel = null;
@@ -176,6 +196,9 @@
 
     const panel = document.createElement("div");
     panel.className = "image-detail-panel";
+    if (detailMode === "sidebar") {
+      panel.classList.add("sidebar-mode");
+    }
 
     const header = document.createElement("div");
     header.className = "image-detail-header";
@@ -262,20 +285,43 @@
     return panel;
   };
 
-  const closeDetailPanel = () => {
-    if (detailPanel) {
-      detailPanel.remove();
-      detailPanel = null;
+  const preserveAnchorPosition = (anchor, mutate) => {
+    if (!anchor) {
+      mutate();
+      return;
     }
+    const before = anchor.getBoundingClientRect().top;
+    mutate();
+    const after = anchor.getBoundingClientRect().top;
+    const delta = after - before;
+    if (delta) {
+      window.scrollBy({ top: delta, left: 0, behavior: "instant" });
+    }
+  };
+
+  const closeDetailPanel = ({ skipLayoutCompensation = false } = {}) => {
     const selected = document.querySelector(".image-item.selected");
-    if (selected) selected.classList.remove("selected");
+    const wasSidebarOpen = document.body.classList.contains("images-detail-sidebar-open");
+    const shouldCompensate = wasSidebarOpen && !skipLayoutCompensation;
+
+    preserveAnchorPosition(shouldCompensate ? selected : null, () => {
+      if (detailPanel) {
+        detailPanel.remove();
+        detailPanel = null;
+      }
+      if (selected) selected.classList.remove("selected");
+      if (!skipLayoutCompensation) {
+        document.body.classList.remove("images-detail-sidebar-open");
+      }
+    });
+
     selectedIndex = -1;
   };
 
   const showDetailPanel = (index) => {
     if (index < 0 || index >= allImages.length) return;
 
-    closeDetailPanel();
+    closeDetailPanel({ skipLayoutCompensation: detailMode === "sidebar" });
     selectedIndex = index;
 
     const img = allImages[index];
@@ -298,6 +344,15 @@
     clickedItem.classList.add("selected");
 
     detailPanel = createDetailPanel(img, index);
+
+    if (detailMode === "sidebar") {
+      const alreadyOpen = document.body.classList.contains("images-detail-sidebar-open");
+      preserveAnchorPosition(alreadyOpen ? null : clickedItem, () => {
+        document.body.classList.add("images-detail-sidebar-open");
+        document.body.append(detailPanel);
+      });
+      return;
+    }
 
     const clickedTop = clickedItem.offsetTop;
 
@@ -517,6 +572,7 @@
   const optionsBtn = document.querySelector("#options-btn");
   const optionsPopup = document.querySelector("#options-popup");
   const hideAiSlopCheckbox = document.querySelector("#hide-ai-slop");
+  const detailsSidebarCheckbox = document.querySelector("#details-sidebar");
 
   let savedSetting;
   try {
@@ -524,6 +580,7 @@
   } catch {}
 
   hideAiSlopCheckbox.checked = savedSetting;
+  if (detailsSidebarCheckbox) detailsSidebarCheckbox.checked = detailMode === "sidebar";
 
   optionsBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -552,6 +609,18 @@
     const grid = document.getElementById("images-grid");
     grid.innerHTML = "";
     renderImages(allImages);
+  });
+
+  detailsSidebarCheckbox?.addEventListener("change", (e) => {
+    const wasOpen = selectedIndex !== -1;
+    const reopenIndex = selectedIndex;
+
+    if (wasOpen) closeDetailPanel();
+
+    detailMode = e.target.checked ? "sidebar" : "bar";
+    writeCookie("pref_images_detail", detailMode);
+
+    if (wasOpen) showDetailPanel(reopenIndex);
   });
 
   (async () => {
