@@ -1,7 +1,7 @@
 const MAPBOX_TOKEN =
-  "pk.eyJ1IjoidW50cnV0aDQ0NSIsImEiOiJjbW53NDVvNXQwZXc0MnNzYjlodmhobXh1In0.l-4OHl3hyX-PrHOzBzQMng";
+  "pk.eyJ1IjoiY2hyaXN3aG9uZ21hcGJveCIsImEiOiJjbDl6bzJ6N3EwMGczM3BudjZmbm5yOXFnIn0.lPhc5Z5H3byF_gf_Jz48Ug";
 
-const MAPBOX_REFERER = "http://localhost/";
+const MAPBOX_REFERER = "https://labs.mapbox.com/";
 
 const BROWSER_UA =
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
