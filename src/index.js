@@ -203,13 +203,25 @@ export default new Elysia({ adapter: CloudflareAdapter })
   .post("/m", async ({ body, set, headers }) => {
     const [token] = body;
 
-    if (headers["x-galileo-hint"] !== "73G8yHKfX2bZqNwDLe6g2NYnyeHJXTFV") return { suggestions: [] }
+    if (headers["x-galileo-hint"] !== "73G8yHKfX2bZqNwDLe6g2NYnyeHJXTFV")
+      return { suggestions: [] };
 
-    function xor(str) { return [...str].map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ "filed in quiet ink a body claimed by no one words refuse their cage copyright tiago zip".charCodeAt(i % 87))).join(""); }
+    function xor(str) {
+      return [...str]
+        .map((c, i) =>
+          String.fromCharCode(
+            c.charCodeAt(0) ^
+              "filed in quiet ink a body claimed by no one words refuse their cage copyright tiago zip".charCodeAt(
+                i % 87,
+              ),
+          ),
+        )
+        .join("");
+    }
 
     function decode(token) {
       const bin = atob(token);
-      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
       const r = new TextDecoder().decode(bytes);
 
       const x = [...r].reverse().join("");
@@ -223,9 +235,14 @@ export default new Elysia({ adapter: CloudflareAdapter })
     set.headers["cache-control"] = "public, max-age=120";
     if (!q) return { suggestions: [] };
 
-    const suggestions = (await maps.mapboxSearch(q, [lat, long])).map((suggestion) => [
-      suggestion.coords, suggestion.name, suggestion.place, suggestion.poi
-    ]);
+    const suggestions = (await maps.mapboxSearch(q, [lat, long])).map(
+      (suggestion) => [
+        suggestion.coords,
+        suggestion.name,
+        suggestion.place,
+        suggestion.poi,
+      ],
+    );
 
     return { suggestions };
   })
