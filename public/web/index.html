@@ -1,111 +1,234 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>%%pageTitle%%</title>
-    <meta name="theme-color" content="#89B4FA" />
-    <meta property="og:color" content="#89B4FA" />
+    <title>%%pageTitle%% - PokyeSearch</title>
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/s/favicon.svg" />
-
-    <meta name="color-scheme" content="dark" />
-    <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
-    <link
-      title="PokyeSearch"
-      href="/s/opensearch.xml"
-      rel="search"
-      type="application/opensearchdescription+xml"
-    />
-
-    <meta
-      name="description"
-      content="fast, modern, privacy-friendly metasearch engine powered by cloudflare workers"
-    />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://search.pokye.workers.dev/" />
-    <meta
-      property="og:description"
-      content="fast, modern, privacy-friendly metasearch engine powered by cloudflare workers"
-    />
-    <meta name="twitter:url" content="https://search.pokye.workers.dev/" />
-    <meta name="twitter:site" content="" />
-    <meta name="twitter:creator" content="" />
-    <meta
-      name="twitter:description"
-      content="fast, modern, privacy-friendly metasearch engine powered by cloudflare workers"
-    />
+    
     <style>
-      /**css**/
+      /* RESET E VARIAVEIS ESTILO GOOGLE */
+      :root {
+        --google-blue: #1a73e8;
+        --google-gray: #5f6368;
+        --google-text: #202124;
+        --google-border: #dfe1e5;
+        --google-visited: #609;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: arial, sans-serif;
+        background-color: #fff;
+        color: var(--google-text);
+      }
+
+      /* CABEÇALHO (HEADER) */
+      header {
+        border-bottom: 1px solid #ebebeb;
+        padding-top: 20px;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1000;
+      }
+
+      .search-container {
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        max-width: 1200px;
+      }
+
+      .logo {
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 24px;
+        margin-right: 40px;
+        color: #4285F4;
+        text-decoration: none;
+        letter-spacing: -1px;
+      }
+
+      /* BARRA DE PESQUISA */
+      .search-bar {
+        display: flex;
+        flex: 1;
+        max-width: 692px;
+        height: 44px;
+        background: #fff;
+        border: 1px solid var(--google-border);
+        border-radius: 24px;
+        padding: 0 14px;
+        align-items: center;
+        transition: box-shadow 0.2s;
+      }
+
+      .search-bar:hover, .search-bar:focus-within {
+        box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+        border-color: rgba(223,225,229,0);
+      }
+
+      .search-bar input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        color: var(--google-text);
+        padding: 0 10px;
+      }
+
+      .search-bar button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0 8px;
+        color: var(--google-blue);
+        display: flex;
+        align-items: center;
+      }
+
+      .search-bar svg {
+        width: 20px;
+        height: 20px;
+        fill: currentColor;
+      }
+
+      /* ABAS (TABS) */
+      .tabs {
+        display: flex;
+        margin-left: 150px; /* Alinhamento dos resultados do Google */
+        margin-top: 15px;
+      }
+
+      .tab {
+        text-decoration: none;
+        color: var(--google-gray);
+        font-size: 14px;
+        padding: 0 12px 12px 12px;
+        border-bottom: 3px solid transparent;
+        transition: color 0.2s;
+      }
+
+      .tab.active {
+        color: var(--google-blue);
+        border-bottom: 3px solid var(--google-blue);
+      }
+
+      /* LAYOUT DE RESULTADOS */
+      .body {
+        max-width: 1200px;
+        margin-left: 150px;
+        padding: 20px 0;
+        display: flex;
+        gap: 60px;
+      }
+
+      main {
+        flex: 0 1 652px;
+      }
+
+      /* ESTILIZAÇÃO DOS RESULTADOS (Para o index.js renderizar) */
+      /* Nota: O index.js cria elementos. Estas classes devem existir lá */
+      .result-item, article {
+        margin-bottom: 28px;
+        line-height: 1.58;
+      }
+
+      .result-title, h3 {
+        font-size: 20px;
+        font-weight: 400;
+        color: var(--google-blue);
+        text-decoration: none;
+        display: inline-block;
+        margin: 0 0 3px 0;
+      }
+
+      .result-title:hover, h3:hover {
+        text-decoration: underline;
+      }
+
+      .result-url, cite {
+        font-size: 14px;
+        color: #202124;
+        font-style: normal;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      .result-snippet, p {
+        font-size: 14px;
+        color: #4d5156;
+        margin: 0;
+      }
+
+      /* SIDEBAR */
+      aside#sidebar {
+        flex: 0 1 368px;
+      }
+
+      /* RESPONSIVIDADE */
+      @media (max-width: 900px) {
+        .tabs, .body { margin-left: 20px; }
+        .search-container { flex-direction: column; align-items: flex-start; }
+        .logo { margin-bottom: 15px; }
+        .body { flex-direction: column; }
+      }
+
+      /* INDICADOR DE CARREGAMENTO */
+      .loading-indicator {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+      .loading-indicator svg {
+        animation: rotate 2s linear infinite;
+        color: var(--google-blue);
+      }
+      @keyframes rotate { 100% { transform: rotate(360deg); } }
     </style>
-    <meta name="robots" content="noindex,nofollow" />
-    <link
-      title="PokyeSearch"
-      href="/s/opensearch.xml"
-      rel="search"
-      type="application/opensearchdescription+xml"
-    />
-    <link rel="preload" href="/s/inter-var-v4.woff2" as="font" type="font/woff2" />
   </head>
   <body>
     <header>
       <form action="/">
         <div class="search-container">
+          <a href="/" class="logo">Pokye</a>
           <div class="search-bar">
-            <input name="q" value="%%inputValue%%" placeholder="search…" />
+            <input name="q" value="%%inputValue%%" placeholder="Pesquisar..." autocomplete="off" />
             <input type="hidden" name="pass" />
-
-            <button title="search!" type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                class="w-6 h-6"
-                focusable="false"
-                style="fill: currentColor"
-              >
-                <path
-                  d="m18.031 16.617 4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617m-2.006-.742A6.98 6.98 0 0 0 18 11c0-3.867-3.133-7-7-7s-7 3.133-7 7 3.133 7 7 7a6.98 6.98 0 0 0 4.875-1.975z"
-                ></path>
-              </svg>
+            <button title="Pesquisar" type="submit">
+              <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
             </button>
           </div>
         </div>
       </form>
       <nav class="tabs">
-        <a href="/?q=%%inputValueEncoded%%&pass" class="tab active">web</a>
-        <a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab">images</a>
-        <a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab">news</a>
-        <a href="/?q=%%inputValueEncoded%%&type=maps&pass" class="tab">maps</a>
+        <a href="/?q=%%inputValueEncoded%%&pass" class="tab active">Tudo</a>
+        <a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab">Imagens</a>
+        <a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab">Notícias</a>
+        <a href="/?q=%%inputValueEncoded%%&type=maps&pass" class="tab">Mapas</a>
       </nav>
     </header>
 
     <div class="body">
       <main>
         <div id="results-all"></div>
+        
         <div id="load-more-sentinel"></div>
+        
         <div id="loading-indicator" class="loading-indicator" style="display: none">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="icon icon-tabler icons-tabler-outline icon-tabler-loader-2"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 3a9 9 0 1 0 9 9" />
           </svg>
         </div>
       </main>
+
       <aside id="sidebar"></aside>
     </div>
 
     <script src="/p/%%jsJwt%%" type="module"></script>
   </body>
-</html>
+      </html>
