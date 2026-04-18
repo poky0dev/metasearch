@@ -1,111 +1,91 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>%%pageTitle%%</title>
-    <meta name="theme-color" content="#89B4FA" />
-    <meta property="og:color" content="#89B4FA" />
-    <link rel="icon" href="/s/favicon.svg" />
-
-    <meta name="color-scheme" content="dark" />
-    <meta http-equiv="x-ua-compatible" content="IE=edge,chrome=1" />
-    <link
-      title="PokyeSearch"
-      href="/s/opensearch.xml"
-      rel="search"
-      type="application/opensearchdescription+xml"
-    />
-
-    <meta
-      name="description"
-      content="fast, modern, privacy-friendly metasearch engine powered by cloudflare workers"
-    />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://search.pokye.workers.dev/" />
-    <meta
-      property="og:description"
-      content="fast, modern, privacy-friendly metasearch engine powered by cloudflare workers"
-    />
-    <meta name="twitter:url" content="https://search.pokye.workers.dev/" />
-    <meta name="twitter:site" content="" />
-    <meta name="twitter:creator" content="" />
-    <meta
-      name="twitter:description"
-      content="fast, modern, privacy-friendly metasearch engine powered by cloudflare workers"
-    />
-    <style>
-      /**css**/
-    </style>
-    <meta name="robots" content="noindex,nofollow" />
-    <link
-      title="PokyeSearch"
-      href="/s/opensearch.xml"
-      rel="search"
-      type="application/opensearchdescription+xml"
-    />
-    <link rel="preload" href="/s/inter-var-v4.woff2" as="font" type="font/woff2" />
-  </head>
-  <body>
-    <header>
-      <form action="/">
-        <div class="search-container">
-          <div class="search-bar">
-            <input name="q" value="%%inputValue%%" placeholder="search…" />
-            <input type="hidden" name="pass" />
-
-            <button title="search!" type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                class="w-6 h-6"
-                focusable="false"
-                style="fill: currentColor"
-              >
-                <path
-                  d="m18.031 16.617 4.283 4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11 20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9 9a8.96 8.96 0 0 1-1.969 5.617m-2.006-.742A6.98 6.98 0 0 0 18 11c0-3.867-3.133-7-7-7s-7 3.133-7 7 3.133 7 7 7a6.98 6.98 0 0 0 4.875-1.975z"
-                ></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </form>
-      <nav class="tabs">
-        <a href="/?q=%%inputValueEncoded%%&pass" class="tab active">web</a>
-        <a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab">images</a>
-        <a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab">news</a>
-        <a href="/?q=%%inputValueEncoded%%&type=maps&pass" class="tab">maps</a>
-      </nav>
-    </header>
-
-    <div class="body">
-      <main>
-        <div id="results-all"></div>
-        <div id="load-more-sentinel"></div>
-        <div id="loading-indicator" class="loading-indicator" style="display: none">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="icon icon-tabler icons-tabler-outline icon-tabler-loader-2"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M12 3a9 9 0 1 0 9 9" />
-          </svg>
-        </div>
-      </main>
-      <aside id="sidebar"></aside>
-    </div>
-
-    <script src="/p/%%jsJwt%%" type="module"></script>
-  </body>
-</html>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>%%pageTitle%%</title>
+<meta name="theme-color" content="#202124"/>
+<link rel="icon" href="/s/favicon.svg"/>
+<meta name="color-scheme" content="dark"/>
+<link title="PokyeSearch" href="/s/opensearch.xml" rel="search" type="application/opensearchdescription+xml"/>
+<meta name="description" content="fast, modern, privacy-friendly metasearch engine"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://search.pokye.workers.dev/"/>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#202124;--surface:#303134;--border:#3c4043;--text:#e8eaed;--text-sec:#9aa0a6;--link:#8ab4f8;--visited:#c58af9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:dark}
+html{background:var(--bg)}
+body{min-height:100vh;color:var(--text);display:flex;flex-direction:column}
+header{background:var(--bg);border-bottom:1px solid var(--border);padding:14px 20px 0;position:sticky;top:0;z-index:100}
+header form{max-width:680px;margin:0 auto 12px;display:flex;align-items:center;gap:20px}
+.logo{flex-shrink:0}
+.logo img{width:92px;display:block}
+.search-container{flex:1;max-width:584px}
+.search-bar{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:24px;height:44px;padding:0 14px;transition:background .2s,box-shadow .2s}
+.search-bar:hover{background:var(--surface);box-shadow:0 1px 6px rgba(0,0,0,.3)}
+.search-bar:focus-within{box-shadow:0 1px 6px rgba(138,180,248,.3);border-color:var(--link)}
+.search-bar input[type=text]{flex:1;background:0 0;border:none;outline:0;color:var(--text);font-size:16px;padding:0 10px}
+.search-bar input::placeholder{color:var(--text-sec)}
+.search-bar button{background:0 0;border:none;cursor:pointer;padding:8px;display:flex;align-items:center;color:var(--link);transition:background .2s;border-radius:50%}
+.search-bar button:hover{background:rgba(138,180,248,.1)}
+.search-bar button svg{width:20px;height:20px}
+.tabs{max-width:680px;margin:0 auto;display:flex;padding-left:132px}
+.tab{color:var(--text-sec);text-decoration:none;padding:12px;font-size:13px;border-bottom:3px solid transparent;transition:color .2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--link);border-bottom-color:var(--link)}
+.body{display:flex;max-width:1280px;width:100%;margin:0 auto;padding:20px;gap:40px;flex:1}
+main{flex:1;max-width:652px}
+aside{width:380px;flex-shrink:0}
+.loading-indicator{display:flex;justify-content:center;padding:40px 20px}
+.loading-indicator svg{color:var(--link);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#results-all{display:flex;flex-direction:column;gap:28px}
+.result-item{display:flex;flex-direction:column;gap:4px}
+.result-item .url{display:flex;align-items:center;gap:8px;font-size:14px}
+.result-item .url .favicon{width:18px;height:18px;border-radius:50%}
+.result-item .url .breadcrumb{color:var(--text-sec)}
+.result-item .title{font-size:20px}
+.result-item .title a{color:var(--link);text-decoration:none}
+.result-item .title a:visited{color:var(--visited)}
+.result-item .title a:hover{text-decoration:underline}
+.result-item .snippet{font-size:14px;line-height:1.6;color:var(--text-sec)}
+#sidebar{background:var(--surface);border-radius:8px;padding:20px;border:1px solid var(--border)}
+@media(max-width:1024px){.body{flex-direction:column}aside{width:100%;max-width:652px}.tabs{padding-left:0}header form{flex-direction:column;gap:12px;align-items:stretch}.logo{text-align:center}}
+@media(max-width:640px){header{padding:12px 16px 0}.body{padding:16px}.search-bar{height:40px}.tab{font-size:12px;padding:10px 8px 12px}}
+</style>
+</head>
+<body>
+<header>
+<form action="/">
+<a href="/" class="logo"><img src="https://search.pokye.workers.dev/assets/v2.logo.png" alt="Pokye" width="92" height="30"/></a>
+<div class="search-container">
+<div class="search-bar">
+<input name="q" type="text" value="%%inputValue%%" placeholder="Search…"/>
+<input type="hidden" name="pass"/>
+<button title="Search" type="submit">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+</button>
+</div>
+</div>
+</form>
+<nav class="tabs">
+<a href="/?q=%%inputValueEncoded%%&pass" class="tab active">All</a>
+<a href="/?q=%%inputValueEncoded%%&type=images&pass" class="tab">Images</a>
+<a href="/?q=%%inputValueEncoded%%&type=news&pass" class="tab">News</a>
+<a href="/?q=%%inputValueEncoded%%&type=maps&pass" class="tab">Maps</a>
+</nav>
+</header>
+<div class="body">
+<main>
+<div id="results-all"></div>
+<div id="load-more-sentinel"></div>
+<div id="loading-indicator" class="loading-indicator" style="display:none">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+</div>
+</main>
+<aside id="sidebar"></aside>
+</div>
+<script src="/p/%%jsJwt%%" type="module"></script>
+</body>
+  </html>
