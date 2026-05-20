@@ -24,9 +24,9 @@ const simplify = (node) => {
 
 export default async function search(query, page = 0) {
   const resp = await braveFetch(
-    `https://search.brave.com/search?search_lang=pt&q=${encodeURIComponent(
+    `https://search.brave.com/search?q=${encodeURIComponent(
       query,
-    )}${page ? `&offset=${page}` : ""}&source=web`,
+    )}${page ? `&offset=${page}` : ""}&source=web&search_lang=pt-BR&safesearch=strict`,
     {
       headers: {
         accept:
